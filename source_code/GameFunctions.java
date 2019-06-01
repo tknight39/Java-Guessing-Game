@@ -127,7 +127,6 @@ public class GameFunctions
                 System.out.println("Invalid input, try again");
             }
         }
-
     }
 
     /* Main game loop */

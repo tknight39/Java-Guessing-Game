@@ -10,6 +10,6 @@ public class Main
 
     public static void main(String[] args)
     {
-        GameFunctions.playGame();
+        System.Out.Println("hello world");
     }
 }

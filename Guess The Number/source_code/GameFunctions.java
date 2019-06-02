@@ -2,26 +2,28 @@ import java.util.Random;
 import java.util.Scanner;
 
 public class GuessingGame {
-    private static int attempts;
-    private static int randomNumber;
-    private static int guessRange;
-    private static int userGuess;
+    private int attempts;
+    private int randomNumber;
+    private int guessRange;
+    private int userGuess;
 
-    private static Scanner scanner = new Scanner(System.in);
+    private Scanner scanner = new Scanner(System.in);
+
+    private static boolean playAgain = true;
 
     /* Main game loop */
     public static void main() {
 
         do {
-            playGame();
-        } while (playAgain());
+            new GuessingGame().playGame();
+        } while (playAgain);
     }
 
     /*
      * Initializes game, gets input from user, and checks
      * to see if the guess is correct
      */
-    private static void playGame() {
+    private void playGame() {
         gameInit();
         while (attempts > 0 && userGuess != randomNumber) {
             getInput();
@@ -34,13 +36,13 @@ public class GuessingGame {
      *  Generating a new random number and finding how
      *  Many attempts the player will have
      */
-    private static void gameInit() {
+    private void gameInit() {
         setRandomNumber();
         setAttemptsAndRange();
     }
 
     /* Sets randomNumber to a value between 1 and 100 */
-    private static void setRandomNumber() {
+    private void setRandomNumber() {
         Random random = new Random();
         int low = 0;
         int high = 100;
@@ -48,7 +50,7 @@ public class GuessingGame {
     }
 
     /* Sets the attempts value based on how large the randomNumber is */
-    private static void setAttemptsAndRange() {
+    private void setAttemptsAndRange() {
         if (randomNumber <= 10) {
             attempts = 2; guessRange = 10;
         }
@@ -67,17 +69,17 @@ public class GuessingGame {
     }
 
     /* Displays the number of attempts the user has left */
-    private static void displayAttempts() {
+    private void displayAttempts() {
         System.out.println("Attempts remaining: " + attempts);
     }
 
     /* Displays the random number, used at the end of the game */
-    private static void displayRandomNumber() {
+    private void displayRandomNumber() {
         System.out.println("The random number is " + randomNumber);
     }
 
     /* Gets input from the user */
-    private static void getInput() {
+    private void getInput() {
         while (true) {
             try {
                 displayAttempts();
@@ -99,7 +101,7 @@ public class GuessingGame {
     }
 
     /*  Checks to see if the guess is correct */
-    private static void checkGuess() {
+    private void checkGuess() {
         if (userGuess != randomNumber) {
             if (userGuess < randomNumber) {
                 System.out.println("Too Low!");
@@ -114,8 +116,9 @@ public class GuessingGame {
     /*
      * Tells the user their win/loss status and asks them to play again
      * Also Tells the user what the random number was
+     * If user inputs 'no', the playAgain boolean will be set false
      */
-    private static boolean playAgain() {
+    private void playAgain() {
         String userInput;
 
         if (attempts > 0) {
@@ -133,10 +136,10 @@ public class GuessingGame {
                 userInput = scanner.next();
                 if (userInput.equals("yes") || userInput.equals("no")) {
                     if (userInput.equals("yes")) {
-                        return true;
+                        break;
                     }
                     else {
-                        return false;
+                        playAgain = false;
                     }
                 }
                 else {

@@ -5,11 +5,9 @@
  * Description: A simple number guessing game  *
  * ********************************************/
 
-public class Main
-{
+public class Main {
 
-    public static void main(String[] args)
-    {
-        GameFunctions.playGame();
+    public static void main(String[] args) {
+        GameFunctions.main();
     }
 }

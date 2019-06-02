@@ -1,7 +1,7 @@
 import java.util.Random;
 import java.util.Scanner;
 
-public class GameFunctions {
+public class GuessingGame {
     private static int attempts;
     private static int randomNumber;
     private static int guessRange;
@@ -32,7 +32,7 @@ public class GameFunctions {
     /*
      *  Takes care of the setup aspects of the game like
      *  Generating a new random number and finding how
-     *  Many attemps the player will have
+     *  Many attempts the player will have
      */
     private static void gameInit() {
         setRandomNumber();
@@ -81,7 +81,7 @@ public class GameFunctions {
         while (true) {
             try {
                 displayAttempts();
-                System.out.println("Enter a number between 0 and " + guessRange);
+                System.out.println("Enter a number between 1 and " + guessRange);
                 userGuess = scanner.nextInt();
 
                 if ( userGuess <= 100 && userGuess > 0) {

@@ -1,177 +1,202 @@
-import java.util.InputMismatchException;
+/**
+ *  Title:          TicTacToe
+ *
+ *  Author:         Tyler Knight
+ *
+ *  Date:           2/29/20
+ *
+ *  Description:    Draws a tic tac toe board and prompts users for
+ *                  input until a player wins the game or the board
+ *                  is full, which would be a tie.
+ */
+
+
+package com.TylerKnight;
+
+
 import java.util.Scanner;
 
-public class Main {
 
-    private static Scanner scanner = new Scanner(System.in);
-    private static String[] board;
-    private static String player;
-    private static String stringInput;
-    private static String winner;
+public class Main
+{
 
-    static final int totalBoardPositions = 9;
 
-    public static void main(String[] args) {
+    private static final int MAX_TURNS = 9;
 
-        while (true) {
-            gameInit();
-            while (winner == null) {
-                drawBoard();
-                getInput();
-                changePlayer();
-                checkForWinner();
-                clrscreen();
+    private static Scanner scan = new Scanner(System.in);
+
+    public static void main(String[] args)
+    {
+        final char[] xo = {'X', 'O'};
+        boolean gameRunning = true;
+
+        while (gameRunning)
+        {
+            char[] boardValues = {'1','2','3','4','5','6','7','8','9'};
+            int currentPlayer = 1, turnsPassed = 0, winLoseTie = 0;
+
+            while ( (winLoseTie == 0) && (turnsPassed <= 9) )
+            {
+                UpdateDisplay(turnsPassed, currentPlayer, boardValues);
+                boardValues[GetPlayerChoice(boardValues)] = xo[currentPlayer - 1];
+                turnsPassed++;
+                winLoseTie = PlayerWon(boardValues, currentPlayer, turnsPassed);
+                currentPlayer = (currentPlayer == 1) ? 2 : 1;
             }
-            if (!playAgain()) {
-                break;
-            }
+
+            DrawBoard(boardValues);
+            gameRunning = Game_Over(winLoseTie);
         }
     }
 
-    /* Draws a new board */
-    static void drawBoard() {
-        System.out.println("| " + board[0] + " | " + board[1] + " | " + board[2] + " |");
-        System.out.println("|-----------|");
-        System.out.println("| " + board[3] + " | " + board[4] + " | " + board[5] + " |");
-        System.out.println("|-----------|");
-        System.out.println("| " + board[6] + " | " + board[7] + " | " + board[8] + " |");
-    }
 
-    /* Resets all data at start of game */
-    static void gameInit() {
-        winner = null;
-        board = new String[9];
-        player = "X";
 
-        /* Assigns a number to each square on the board */
-        for (int i=0; i<9; i++) {
-            board[i] = String.valueOf(i+1);
-        }
-
-        System.out.println("Welcome to Tic Tac Toe!");
-        System.out.println("---------------------\n\n");
-    }
-
-    /*
-     * Gets number input from the user
-     *  Will loop until the user enters
-     *  A number that has not been taken
-     *  On the game board
+    /**
+     *  Print Game Over
+     *  Print the player that won, or tie
+     *
+     * @Param   winStatus:  1 = p1 Won
+     *                      2 = p2 Won
+     *                      3 = tie
      */
-    static void getInput() {
-        int numInput = 0;
+    private static boolean Game_Over(int winStatus)
+    {
+        System.out.println("GAME OVER!!!");
 
-        while (true) {
-            try {
-                System.out.println("\n\nPlayer " + player + " Enter a number 1-9");
-                numInput = scanner.nextInt();
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid Input, try again");
-                continue;
-            }
-
-            if (numInput < 1 || numInput > 9) {
-                System.out.println("Invalid Input. Enter numbers 1-9 only");
-                continue;
-            }
-            else {
-                if (board[numInput - 1] != "X" && board[numInput -1] != "O") {
-                    board[numInput - 1] = player;
-                    break;
-                }
-                else {
-                    System.out.println("Board Position Taken, try another square.");
-                    drawBoard();
-                    continue;
-                }
-            }
-        }
-    }
-
-    /* Changes the player at end of turn */
-    static void changePlayer() {
-        if (player == "X") {
-            player = "O";
-        }
-        else {
-            player = "X";
-        }
-    }
-
-    /*
-     * Checks the board for a winner
-     * If found it will change the winner
-     * String to x or 0
-     */
-    static void checkForWinner() {
-        for (int i=0; i<totalBoardPositions; i++) {
-             String line = "";
-            switch (i) {
-                case 0:
-                    line = board[0] + board[1] + board[2];
-                    break;
-                case 1:
-                    line = board[3] + board[4] + board[5];
-                    break;
-                case 2:
-                    line = board[6] + board[7] + board[8];
-                    break;
-                case 3:
-                    line = board[0] + board[3] + board[6];
-                    break;
-                case 4:
-                    line = board[1] + board[4] + board[7];
-                    break;
-                case 5:
-                    line = board[2] + board[5] + board[8];
-                    break;
-                case 6:
-                    line = board[0] + board[4] + board[8];
-                    break;
-                case 7:
-                    line = board[2] + board[4] + board[6];
-                    break;
-            }
-            if (line.equals("XXX")) {
-                winner = "X";
+        switch (winStatus)
+        {
+            case 1:
+                System.out.println("Player 1 Won!!");
                 break;
-            }
-            else if (line.equals("OOO")) {
-                winner = "O";
+            case 2:
+                System.out.println("Player 2 Won!!");
                 break;
-            }
+            case 3:
+                System.out.println("Tie Game!!");
         }
+
+        return (GetNumberInput(1,2, "Play again? 1/2 = yes/no") == 1);
     }
 
-    /*
-     * End of game, displays the winner of the game
-     * And asks the user to play again
+
+
+
+    /**
+     * Print game data and draw game board
+     * @param turn:         How many turns have passed
+     * @param player:       The current player
+     * @param boardPattern  Array that holds current board values (x's, o's)
      */
-    static boolean playAgain() {
-        System.out.println("Player " + winner +  " Won!");
-        System.out.println("Play again? yes/no");
-
-        while (true) {
-            try {
-                stringInput = scanner.nextLine() ;
-                if (stringInput.equals("yes")) {
-                    return true;
-                }
-                else if (stringInput.equals("no")){
-                    return false;
-                }
-            } catch (InputMismatchException e) {
-                System.out.println("Invalid input. Enter yes or no");
-            }
-        }
-
+    private static void UpdateDisplay(int turn, int player, char[] boardPattern)
+    {
+        System.out.println("Turns Remaining: " + (MAX_TURNS - turn));
+        System.out.println("Current Player: Player " + (player) );
+        DrawBoard(boardPattern);
     }
 
-    /* Prints newlines to simulate clearing the screen */
-    static void clrscreen() {
-        for (int i=0; i<20; i++){
-            System.out.println("\n");
+
+    /**
+     * Draw the game board
+     * @param boardPattern: Array that holds board values (x's, o's)
+     */
+    private static void DrawBoard (char[] boardPattern)
+    {
+        System.out.println(" " + boardPattern[0] + " " + "|" + " " + boardPattern[1] + " " + "|" + " " + boardPattern[2]);
+        System.out.println("-----------");
+        System.out.println(" " + boardPattern[3] + " " + "|" + " " + boardPattern[4] + " " + "|" + " " + boardPattern[5]);
+        System.out.println("-----------");
+        System.out.println(" " + boardPattern[6] + " " + "|" + " " + boardPattern[7] + " " + "|" + " " + boardPattern[8]);
+    }
+
+
+    /**
+     * Get integer input from user
+     * that is within set range
+     * @param min       Minimum acceptable input
+     * @param max       Maximum acceptable input
+     * @param prompt    Reason for the input
+     * @return          Return the user input
+     */
+    private static int GetNumberInput(int min, int max, String prompt)
+    {
+        Scanner scan = new Scanner(System.in);
+        int usrInput;
+
+        do {
+            System.out.println(prompt);
+            System.out.println("Enter an integer between " + min + " and " + max);
+            usrInput = scan.nextInt();
         }
+        while ( (usrInput < min) || (usrInput > max) );
+
+        return (usrInput);
+    }
+
+
+    /**
+     * Get the next move from the player
+     *
+     * @param boardValues:  Array holding x's and o's
+     * @return:             User Input
+     */
+    private static int GetPlayerChoice(char[] boardValues)
+    {
+        final int MIN_INPUT = 1, MAX_INPUT = 9;
+        final String prompt = "To mark a board slot, type in the corresponding number";
+        int usrInput = 0;
+
+        while (!Character.isDigit( (boardValues[usrInput = (GetNumberInput(MIN_INPUT, MAX_INPUT, prompt) - 1)]) ))
+        {
+            System.out.println("That position has already been taken");
+        }
+        return (usrInput);
+    }
+
+
+
+
+    /**
+     *  1)  Check the board for patterns of x's and o's
+     *      to see if a player has won the game,
+     *      if so, return (player + 1)
+     *
+     *  2)  If the board is full, and nobody has won
+     *      return 3
+     *
+     *  3) If nobody has won, and board is not full
+     *     return 0;
+     *
+     *  @param boardValues:  Array containing values on board (x,o)
+     *  @param player:       The Current Player
+     *  @param turn:         How many turns have passed
+     *  @return:             1, 2, or 3
+     */
+    private static int PlayerWon (char[] boardValues, int player, int turn)
+    {
+        StringBuilder boardPattern = new StringBuilder();
+        final int TIE_GAME = 3;
+        String[] winPattern = {"XXX", "OOO"};
+        final int[][] WINNING_SEQUENCES = {{0,1,2}, {3,4,5}, {6,7,8}, {0,3,6}, {1,4,7}, {2,5,8}, {0,4,8}, {2,4,6}};
+
+
+        if (turn > MAX_TURNS) return TIE_GAME;
+
+        // Build a string using the current board values
+       for (int i = 0; i < boardValues.length; i++)
+           boardPattern.append(String.valueOf(boardValues[i]));
+
+       // Check to see if there is a winning pattern of x's or o's
+       for (int i = 0; i < WINNING_SEQUENCES.length; i++)
+       {
+           StringBuilder tmp = new StringBuilder();
+           tmp.append(  String.valueOf(boardPattern.charAt(WINNING_SEQUENCES[i][0])) +
+                        String.valueOf(boardPattern.charAt(WINNING_SEQUENCES[i][1])) +
+                        String.valueOf(boardPattern.charAt(WINNING_SEQUENCES[i][2])));
+
+           if (tmp.toString().equals(winPattern[player - 1])) return (player);
+       }
+
+         return 0;
     }
 
 }
